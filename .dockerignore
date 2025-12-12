@@ -1,0 +1,138 @@
+# ===================================
+# Version Control
+# ===================================
+.git
+.github
+.gitignore
+.gitattributes
+
+# ===================================
+# IDE & Editor Files
+# ===================================
+.vscode
+.idea
+.fleet
+.nova
+.zed
+.phpactor.json
+.editorconfig
+
+# ===================================
+# Dependencies (will be installed in Docker)
+# ===================================
+/vendor
+/node_modules
+
+# ===================================
+# Environment Files (use docker-compose env)
+# ===================================
+.env
+.env.example
+.env.testing
+.env.backup
+.env.production
+
+# ===================================
+# Laravel Generated/Cache Files
+# ===================================
+/storage/app/*
+!/storage/app/.gitignore
+!/storage/app/public
+/storage/framework/cache/*
+!/storage/framework/cache/.gitignore
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitignore
+/storage/framework/views/*
+!/storage/framework/views/.gitignore
+/storage/logs/*
+!/storage/logs/.gitignore
+/bootstrap/cache/*.php
+!/bootstrap/cache/.gitignore
+.phpunit.result.cache
+/.phpunit.cache
+
+# ===================================
+# Build & Hot-Reload Files
+# ===================================
+/public/hot
+/public/storage
+/public/build
+/public/vendor
+
+# ===================================
+# Test & Debug Files
+# ===================================
+*_output.txt
+*_log.txt
+*_failures.txt
+test_*.txt
+debug_*.txt
+debug_*.php
+fix_*.php
+failure_log.txt
+unit_failures.txt
+test_results_round*.txt
+phpunit.xml
+.phpunit.result.cache
+
+# ===================================
+# Documentation & Notes
+# ===================================
+README.md
+CONTRIBUTING.md
+API_DOCS.md
+*.md
+!docker/*.md
+
+# ===================================
+# Temporary & Backup Files
+# ===================================
+*.bak
+*.swp
+*.swo
+*~
+*.backup
+deleted_backup_*
+backup_*
+
+# ===================================
+# OS Specific
+# ===================================
+.DS_Store
+Thumbs.db
+*.log
+
+# ===================================
+# Test Directories
+# ===================================
+/tests
+/.phpunit.cache
+/coverage
+
+# ===================================
+# Scripts (if not needed in container)
+# ===================================
+/scripts
+
+# ===================================
+# Laravel Specific
+# ===================================
+Homestead.json
+Homestead.yaml
+auth.json
+/storage/*.key
+/storage/pail
+
+# ===================================
+# NPM/Node Debugging
+# ===================================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===================================
+# Miscellaneous
+# ===================================
+api_response.json
+routes_output.txt
+wrdgfv

@@ -1,0 +1,101 @@
+# ===================================
+# Laravel Specific
+# ===================================
+/vendor
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+
+# ===================================
+# Environment & Configuration
+# ===================================
+.env
+.env.*
+!.env.example
+!.env.testing
+.phpunit.result.cache
+auth.json
+
+# ===================================
+# IDE & Editor
+# ===================================
+/.idea
+/.vscode
+/.fleet
+/.nova
+/.zed
+.phpactor.json
+/.phpunit.cache
+
+# ===================================
+# OS Specific
+# ===================================
+.DS_Store
+Thumbs.db
+*.log
+
+# ===================================
+# Laravel Homestead
+# ===================================
+Homestead.json
+Homestead.yaml
+
+# ===================================
+# Test & Debug Files
+# ===================================
+*_output.txt
+*_log.txt
+*_failures.txt
+test_*.txt
+debug_*.txt
+failure_log.txt
+unit_failures.txt
+test_results_round*.txt
+
+# ===================================
+# Temporary Scripts & Files
+# ===================================
+debug_*.php
+fix_*.php
+*.bak
+*.swp
+*.swo
+*~
+api_response.json
+API_DOCS.md
+CONTRIBUTING.md
+
+# ===================================
+# Backup Directories
+# ===================================
+deleted_backup_*
+backup_*
+*.backup
+
+# ===================================
+# Laravel Telescope (if using production)
+# ===================================
+/public/vendor/telescope
+
+# ===================================
+# NPM/Node Debugging
+# ===================================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===================================
+# Coverage Reports
+# ===================================
+/coverage
+/.phpunit.cache
+clover.xml
+
+# ===================================
+# Build Artifacts
+# ===================================
+/dist
+/.cache

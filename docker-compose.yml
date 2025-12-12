@@ -1,0 +1,145 @@
+services:
+  # Nginx Web Server
+  nginx:
+    image: mohammadmalabeh/giftos-nginx:latest
+    container_name: giftos_nginx
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - php-fpm
+      - mysql
+    networks:
+      - giftos_network
+
+  # PHP-FPM Application Server
+  php-fpm:
+    image: mohammadmalabeh/giftos-php:latest
+    container_name: giftos_php_fpm
+    working_dir: /var/www/html
+    ports:
+      - "9003:9003"
+    volumes:
+      - .:/var/www/html:rw
+      - ./docker/php-fpm/custom.ini:/usr/local/etc/php/conf.d/custom.ini
+    environment:
+      APP_KEY: ${APP_KEY}
+      APP_URL: ${APP_URL}
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      REDIS_HOST: redis
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      QUEUE_CONNECTION: database
+      CACHE_STORE: redis
+      MAIL_MAILER: ${MAIL_MAILER}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_ENCRYPTION: ${MAIL_ENCRYPTION}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME}
+      STRIPE_KEY: ${STRIPE_KEY}
+      STRIPE_SECRET: ${STRIPE_SECRET}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - giftos_network
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: giftos_mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ${DB_DATABASE:-giftos}
+      MYSQL_USER: ${DB_USERNAME:-giftos}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+    volumes:
+      - giftos_mysql_data:/var/lib/mysql
+    networks:
+      - giftos_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u$$MYSQL_USER", "-p$$MYSQL_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Redis Cache
+  redis:
+    image: redis:alpine
+    container_name: giftos_redis
+    ports:
+      - "6380:6379"
+    command: redis-server --appendonly yes ${REDIS_PASSWORD:+--requirepass ${REDIS_PASSWORD}}
+    volumes:
+      - giftos_redis_data:/data
+    networks:
+      - giftos_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "PING"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  # Laravel Queue Worker
+  queue_worker:
+    image: mohammadmalabeh/giftos-worker:latest
+    container_name: giftos_queue_worker
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html:rw
+      - ./docker/php-fpm/custom.ini:/usr/local/etc/php/conf.d/custom.ini
+    environment:
+      APP_KEY: ${APP_KEY}
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      REDIS_HOST: redis
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      QUEUE_CONNECTION: database
+      CACHE_STORE: redis
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      php-fpm:
+        condition: service_started
+    restart: always
+    networks:
+      - giftos_network
+    command: php artisan queue:work --tries=3 --timeout=90
+
+  # Node.js for Vite asset compilation
+  node:
+    image: node:20-alpine
+    container_name: giftos_node
+    volumes:
+      - .:/var/www/html:rw
+    working_dir: /var/www/html
+    networks:
+      - giftos_network
+    command: "tail -f /dev/null"
+
+networks:
+  giftos_network:
+    driver: bridge
+
+volumes:
+  giftos_mysql_data:
+  giftos_redis_data:

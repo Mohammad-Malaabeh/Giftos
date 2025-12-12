@@ -1,0 +1,35 @@
+name: Generate API Docs (Scribe)
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v4
+        with:
+          php-version: '8.2'
+          extensions: mbstring, json, pdo_mysql
+
+      - name: Install composer deps
+        run: composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader
+
+      - name: Generate API docs with Scribe
+        env:
+          APP_ENV: production
+          APP_URL: ${{ secrets.APP_URL }}
+        run: php artisan scribe:generate --force
+
+      - name: Upload docs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-docs
+          path: public/docs
